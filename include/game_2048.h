@@ -17,11 +17,11 @@
 # include "libfts.h"
 
 # define XY_MAP		4
-# define MAPSIZE	XY_MAP * XY_MAP
+# define MAPSIZE	(XY_MAP * XY_MAP)
 
 # define ESCAPE		27
-# define FLOOR(x)	x / 2
-# define CEIL(x)	x - FLOOR(x)
+# define FLOOR(x)	(x / 2)
+# define CEIL(x)	(x - FLOOR(x))
 
 # define BG_GAME	10
 # define COLOR_TEXT	11
