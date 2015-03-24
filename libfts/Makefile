@@ -10,57 +10,64 @@
 #                                                                              #
 #******************************************************************************#
 
-OBJSDIR = bins/
-
-ASMSDIR = asms/
+CTYPE_DIR = ft/ctype/
+IO_DIR = ft/io/
+MEMORY_DIR = ft/memory/
+OBJSDIR = bins
+STRING_DIR = ft/string/
 
 NAME = libfts.a
 
-ASMS = ft_bzero.s\
-		ft_strcat.s\
-		ft_isalpha.s\
-		ft_isdigit.s\
-		ft_isalnum.s\
-		ft_isascii.s\
-		ft_isprint.s\
-		ft_toupper.s\
-		ft_tolower.s\
-		ft_puts.s\
-		ft_strlen.s\
-		ft_memset.s\
-		ft_memcpy.s\
-		ft_strdup.s\
-		ft_cat.s\
-		ft_putstr.s\
-		ft_prefixtrim.s\
-		ft_atoi.s\
-		ft_putchar_fd.s\
-		ft_puthex.s\
-		ft_putstr_fd.s
 
-OBJS = $(addprefix $(OBJSDIR), $(ASMS:%.s=%.o))
+.PHONY: all\
+		clean\
+		fclean\
+		re\
+		makeobjs\
+		nolib\
+		ctype\
+		io\
+		memory\
+		string
 
-CC = nasm
+all: $(OBJSDIR) makeobjs
 
-FLAGS = -f macho64
-
-
-.PHONY: all clean fclean re
-
-all: $(OBJSDIR) $(NAME)
-
+$(NAME): $(eval OBJS = $(shell grep -lr . $(OBJSDIR)))
 $(NAME): $(OBJS)
-	ar rc $(NAME) $^
-	ranlib $(NAME)
+	ar -rcs $(NAME) $^
 
 $(OBJSDIR):
-	mkdir $(OBJSDIR)
+	mkdir -pm 0700 $(OBJSDIR)
 
-$(OBJSDIR)%.o: $(ASMSDIR)%.s
-	$(CC) $(FLAGS) $< -o $@
+makeobjs:
+	@$(MAKE) -C $(CTYPE_DIR) nolib
+	@$(MAKE) -C $(IO_DIR) nolib
+	@$(MAKE) -C $(MEMORY_DIR) nolib
+	@$(MAKE) -C $(STRING_DIR) nolib
+	@$(MAKE) $(NAME)
+
+ctype:
+	@$(MAKE) -C $(CTYPE_DIR) nolib
+	@$(MAKE) $(NAME)
+
+io:
+	@$(MAKE) -C $(IO_DIR) nolib
+	@$(MAKE) $(NAME)
+
+memory:
+	@$(MAKE) -C $(MEMORY_DIR) nolib
+	@$(MAKE) $(NAME)
+
+string:
+	@$(MAKE) -C $(MEMORY_DIR) nolib
+	@$(MAKE) -C $(STRING_DIR) nolib
+	@$(MAKE) $(NAME)
 
 clean:
-	rm -rf $(OBJS)
+	@$(MAKE) -C $(CTYPE_DIR) clean
+	@$(MAKE) -C $(IO_DIR) clean
+	@$(MAKE) -C $(MEMORY_DIR) clean
+	@$(MAKE) -C $(STRING_DIR) clean
 
 fclean: clean
 	rm -rf $(NAME)
