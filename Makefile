@@ -18,7 +18,7 @@ LIBDIR = libfts/
 
 NAME = game_2048
 
-SRCS =	$(notdir $(shell grep -rl . $(SRCSDIR)))
+SRCS = $(notdir $(shell grep -rl . $(SRCSDIR)))
 
 OBJS = $(addprefix $(OBJSDIR), $(SRCS:%.c=%.o))
 
