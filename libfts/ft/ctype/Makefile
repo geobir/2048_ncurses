@@ -5,53 +5,41 @@
 #                                                     +:+ +:+         +:+      #
 #    By: mngomane <mngomane@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2015/02/27 20:49:27 by mngomane          #+#    #+#              #
-#    Updated: 2015/02/27 20:49:27 by mngomane         ###   ########.fr        #
+#    Created: 2015/03/24 14:51:00 by mngomane          #+#    #+#              #
+#    Updated: 2015/03/24 14:51:00 by mngomane         ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
-OBJSDIR = bins/
+OBJSDIR = ../../bins/
 
-SRCSDIR = srcs/
+ASMSDIR = asms/
 
-LIBDIR = libfts/
+NAME = ../../libfts.a
 
-NAME = game_2048
+ASMS = $(notdir $(shell grep -rl . $(ASMSDIR)))
 
-SRCS = $(notdir $(shell grep -rl . $(SRCSDIR)))
+OBJS = $(addprefix $(OBJSDIR), $(ASMS:%.s=%.o))
 
-OBJS = $(addprefix $(OBJSDIR), $(SRCS:%.c=%.o))
+CC = nasm
 
-CXX = gcc
-
-CC = /usr/bin/clang
-
-FLAGS = -Wall -Wextra -Werror
-
-HARDCORESFLAGS = -Weverything -Wextra -Werror -Wall -pedantic-errors -std=c89
-
-LIB = -Llibfts -lfts -lncurses
-
-INCS = -Iinclude -Ilibfts/include
+FLAGS = -f macho64
 
 
-.PHONY: all clean fclean re check string
+.PHONY: all clean fclean re nolib
 
-all: $(OBJSDIR) $(NAME) check
+all: $(OBJSDIR) $(NAME)
 
 $(NAME): $(OBJS)
-	@$(MAKE) -C $(LIBDIR) string
-	$(CXX) $(FLAGS) $(LIB) $(INCS) -o $(NAME) $^
+	ar rc $(NAME) $^
+	ranlib $(NAME)
+
+nolib: $(OBJSDIR) $(OBJS)
 
 $(OBJSDIR):
 	mkdir -pm 0700 $(OBJSDIR)
 
-check: $(OBJS)
-	@$(CC) $(HARDCORESFLAGS) $(LIB) $(INCS) -o $(NAME) $^
-
-$(OBJSDIR)%.o: $(SRCSDIR)%.c
-	$(CXX) $(FLAGS) $(INCS) -c $< -o $@
-	@$(CC) $(HARDCORESFLAGS) $(INCS) -c $< -o $@
+$(OBJSDIR)%.o: $(ASMSDIR)%.s
+	$(CC) $(FLAGS) $< -o $@
 
 clean:
 	rm -rf $(OBJS)
